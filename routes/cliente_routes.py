@@ -171,7 +171,7 @@ async def get_pagamento(request: Request, id_pedido: int = Path(...)):
             response, "O pedido em questão não está apto a receber pagamento."
         )
         return response
-    #muda o estado do pedido para PENDENTE
+    # muda o estado do pedido para PENDENTE
     PedidoRepo.alterar_estado(id_pedido, EstadoPedido.PENDENTE.value)
     # captura os itens do pedido
     itens = ItemPedidoRepo.obter_por_pedido(pedido.id)
@@ -233,10 +233,10 @@ async def get_mp_falha(
     request: Request,
     id_pedido: int = Path(...),
 ):
-    response = RedirectResponse(f"/cliente/resumopedido?id_pedido={id_pedido}")
+    response = RedirectResponse(f"/cliente/detalhespedido/{id_pedido}")
     adicionar_mensagem_erro(
         response,
-        "Houve alguma falha ao processar seu pagamento. Por favor, tente novamente.",
+        "Seu pagamento ainda não foi processado. Você pode tentar realizar o pagamento novamente clicando no botão <b>Pagar com Mercado Pago</b>.",
     )
     return response
 
@@ -379,6 +379,7 @@ async def post_remover_item(request: Request, id_produto: int = Form(0)):
     return response
 
 
+
 @router.get("/pedidoconfirmado/{id_pedido:int}", response_class=HTMLResponse)
 async def get_pedidoconfirmado(
     request: Request,
@@ -389,7 +390,7 @@ async def get_pedidoconfirmado(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     PedidoRepo.alterar_estado(id_pedido, EstadoPedido.PAGO.value)
     return templates.TemplateResponse(
-        "cliente/pedidoconfirmado.html",
+        "pages/pedidoconfirmado.html",
         {"request": request, "pedido": pedido},
     )
 
@@ -412,7 +413,6 @@ async def get_detalhespedido(
         "pages/detalhespedido.html",
         {"request": request, "pedido": pedido},
     )
-
 
 @router.post("/post_cancelar_pedido", response_class=RedirectResponse)
 async def post_cancelar_pedido(request: Request, id_pedido: int = Form(0)):
