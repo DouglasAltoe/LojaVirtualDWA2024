@@ -10,7 +10,7 @@ from dtos.usuario_autenticado_dto import UsuarioAutenticadoDto
 from util.cookies import NOME_COOKIE_AUTH, NOME_HEADER_AUTH
 
 
-async def obter_usuario_logado(request: Request) -> dict:
+async def obter_usuario_logado(request: Request) -> dict:    
     token_cookie = request.cookies.get(NOME_COOKIE_AUTH)
     token_header = request.headers.get(NOME_HEADER_AUTH)
     # token_cookie = token_cookie.strip() if token_cookie else ""
@@ -28,7 +28,7 @@ async def obter_usuario_logado(request: Request) -> dict:
         usuario.mensagem = dados["mensagem"]
     return usuario
     
-
+    
 async def checar_autenticacao(request: Request, call_next):
     try:
         usuario = await obter_usuario_logado(request)
@@ -36,14 +36,13 @@ async def checar_autenticacao(request: Request, call_next):
         response = await call_next(request)
         if response.status_code == status.HTTP_307_TEMPORARY_REDIRECT:
             return response
-        return response
+        return response    
     except jwt.ExpiredSignatureError:
-        return JSONResponse({ "mensage": "Token expirado" })
+        return JSONResponse({ "message": "Token expirado" })
     except jwt.InvalidTokenError:
-        return JSONResponse({ "mensage": "Token inválido" })       
+        return JSONResponse({ "message": "Token inválido" })
     except Exception as e:
-        return JSONResponse({ "mensage": f"Erro: {e}" })
-        
+        return JSONResponse({ "message": f"Erro: {e}" })
 
 
 async def checar_autorizacao(request: Request):
@@ -86,8 +85,8 @@ def criar_token(id: int, nome: str, email: str, perfil: int) -> str:
 
 def validar_token(token: str) -> dict:
     return jwt.decode(token, 
-        os.getenv("JWT_SECRET"),
-        os.getenv("JWT_ALGORITHM"))
+        os.getenv("JWT_SECRET"), 
+        os.getenv("JWT_ALGORITHM"))    
     
 
 def configurar_swagger_auth(app):

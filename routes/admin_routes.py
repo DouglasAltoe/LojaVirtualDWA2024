@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path, Request, Response
+from fastapi import APIRouter, Path
 from fastapi.responses import JSONResponse
 
 from dtos.alterar_pedido_dto import AlterarPedidoDto
